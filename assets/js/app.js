@@ -35,6 +35,8 @@
   const cloudBackupBtn = document.getElementById("cloudBackupBtn");
   const cloudLogoutBtn = document.getElementById("cloudLogoutBtn");
   const cloudError = document.getElementById("cloudError");
+  const cloudEmailLinkBtn = document.getElementById("cloudEmailLinkBtn");
+  const cloudEmailNotice = document.getElementById("cloudEmailNotice");
   let cloudBusy = false;
   let offlineReady = false;
 
@@ -101,6 +103,8 @@
       : "Supabase pendiente de conectar";
     cloudLoginForm.hidden = Boolean(user);
     cloudLoginForm.querySelectorAll("input, button").forEach((field) => { field.disabled = !configured || cloudBusy; });
+    cloudEmailLinkBtn.disabled = !configured || cloudBusy || !navigator.onLine;
+    if (user) cloudEmailNotice.textContent = "";
     cloudBackupBtn.disabled = !user || cloudBusy || !navigator.onLine;
     cloudBackupBtn.textContent = cloudBusy ? "Procesando…" : "Guardar copia en Supabase";
     cloudLogoutBtn.hidden = !user;
@@ -512,6 +516,25 @@
     }
   });
 
+  cloudEmailLinkBtn.addEventListener("click", async () => {
+    const emailField = document.getElementById("cloudEmail");
+    if (cloudBusy || !emailField.reportValidity()) return;
+    cloudBusy = true;
+    cloudError.textContent = "";
+    cloudEmailNotice.textContent = "Enviando enlace...";
+    renderCloud();
+    try {
+      await Cloud.sendEmailLink(emailField.value.trim());
+      cloudEmailNotice.textContent = "Si el correo está habilitado, recibirás un enlace de acceso. Revisá también Spam. No compartas ese enlace.";
+    } catch (error) {
+      cloudEmailNotice.textContent = "";
+      cloudError.textContent = error.message;
+    } finally {
+      cloudBusy = false;
+      renderCloud();
+    }
+  });
+
   cloudBackupBtn.addEventListener("click", async () => {
     if (cloudBusy) return;
     cloudBusy = true;
@@ -567,4 +590,17 @@
 
   render();
   renderCloud();
+
+  const authFragment = window.location.hash;
+  const authParams = new URLSearchParams(authFragment.slice(1));
+  if (authParams.has("access_token") || authParams.has("error") || authParams.has("error_code")) {
+    // Retirar credenciales de la dirección; nunca se guardan junto a los movimientos.
+    window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    document.querySelector('[data-tab="resguardo"]').click();
+    cloudBusy = true;
+    renderCloud();
+    Cloud.completeEmailSignIn(authFragment)
+      .catch((error) => { cloudError.textContent = error.message; })
+      .finally(() => { cloudBusy = false; renderCloud(); });
+  }
 })();

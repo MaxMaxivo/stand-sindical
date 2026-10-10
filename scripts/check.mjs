@@ -57,6 +57,7 @@ const requests = [];
 const context = vm.createContext({
   STAND_CONFIG: { supabaseUrl: "https://example.supabase.co", supabasePublishableKey: "sb_publishable_test" },
   AbortSignal,
+  URLSearchParams,
   fetch: async (url, options) => {
     requests.push({ url, ...options });
     if (url.includes("/auth/v1/token")) return { ok: true, json: async () => ({ access_token: "test-session", refresh_token: "test-refresh", expires_in: 3600, user: { id: "user-test", email: "test@example.com" } }) };
@@ -76,5 +77,22 @@ assert.equal(JSON.parse(request.body).owner_id, "user-test");
 context.fetch = async () => ({ ok: false, status: 500, json: async () => ({}) });
 await assert.rejects(context.StandCloud.saveBackup({ state }, "device-test"));
 await assert.rejects(context.StandCloud.signOut());
+assert.equal(context.StandCloud.currentUser(), null);
+
+context.fetch = async (url, options) => {
+  requests.push({ url, ...options });
+  return { ok: true, json: async () => url.endsWith("/user") ? { id: "email-user", email: "test@example.com" } : {} };
+};
+await context.StandCloud.sendEmailLink("test@example.com");
+assert.equal(JSON.parse(requests.at(-1).body).create_user, false);
+await assert.rejects(context.StandCloud.completeEmailSignIn("#error=access_denied&error_code=otp_expired"), /venció/);
+await assert.rejects(context.StandCloud.completeEmailSignIn("#access_token=test&refresh_token=test&type=recovery"), /no es un enlace de acceso/);
+assert.equal(context.StandCloud.currentUser(), null);
+await context.StandCloud.completeEmailSignIn("#access_token=email-test&refresh_token=email-refresh&type=magiclink&expires_in=3600");
+assert.equal(requests.at(-1).headers.Authorization, "Bearer email-test");
+assert.equal(context.StandCloud.currentUser().id, "email-user");
+await context.StandCloud.signOut();
+context.fetch = async () => ({ ok: false, status: 401, json: async () => ({}) });
+await assert.rejects(context.StandCloud.completeEmailSignIn("#access_token=invalid&refresh_token=test&type=magiclink"), /acceso/);
 assert.equal(context.StandCloud.currentUser(), null);
 console.log("OK: datos, shows, venta mixta, precio pendiente, stock, undo, CSV, recursos offline y resguardo simulado.");

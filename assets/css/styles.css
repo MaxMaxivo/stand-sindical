@@ -731,6 +731,7 @@ main {
   margin: 18px 0;
 }
 .backup-login label { display: grid; gap: 8px; font-weight: 700; }
+#cloudEmailLinkBtn { grid-column: 1 / -1; justify-self: start; min-height: 44px; }
 .backup-login input {
   min-width: 0;
   width: 100%;

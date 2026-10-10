@@ -22,6 +22,8 @@
     });
     const data = await response.json().catch(() => null);
     if (!response.ok) {
+      if (response.status === 429) throw new Error("Se alcanzó el límite de solicitudes. Intentá más tarde.");
+      if (data && data.code === "email_address_not_authorized") throw new Error("Supabase no puede enviar a ese correo con la configuración actual.");
       if (response.status === 401 || response.status === 403) throw new Error("Revisá el acceso o volvé a ingresar.");
       throw new Error("No se pudo completar el resguardo. Los datos siguen guardados en este dispositivo.");
     }
@@ -35,6 +37,26 @@
     if (!next || !next.access_token || !next.user) throw new Error("No se pudo iniciar la sesión.");
     session = { ...next, expiresAt: Date.now() + (next.expires_in || 3600) * 1000 };
     return session.user;
+  }
+
+  async function sendEmailLink(email) {
+    await request("/auth/v1/otp", {
+      method: "POST", body: JSON.stringify({ email, create_user: false }),
+    });
+  }
+
+  async function completeEmailSignIn(fragment) {
+    const params = new URLSearchParams(fragment.replace(/^#/, ""));
+    if (params.has("error") || params.has("error_code")) throw new Error("El enlace venció o no es válido. Solicitá uno nuevo.");
+    const token = params.get("access_token");
+    if (!token) return null;
+    if (params.get("type") !== "magiclink" || !params.get("refresh_token")) throw new Error("Este enlace no es un enlace de acceso. Solicitá uno nuevo.");
+    // Verificar la identidad en Supabase antes de aceptar la sesión del enlace.
+    const user = await request("/auth/v1/user", { headers: { Authorization: `Bearer ${token}` } });
+    if (!user || !user.id) throw new Error("No se pudo verificar el acceso.");
+    const seconds = Math.min(Math.max(Number(params.get("expires_in")) || 3600, 1), 3600);
+    session = { access_token: token, refresh_token: params.get("refresh_token"), user, expiresAt: Date.now() + seconds * 1000 };
+    return user;
   }
 
   async function refreshIfNeeded() {
@@ -65,5 +87,5 @@
     }
   }
 
-  global.StandCloud = { isConfigured, signIn, saveBackup, signOut, currentUser: () => session ? session.user : null };
+  global.StandCloud = { isConfigured, signIn, sendEmailLink, completeEmailSignIn, saveBackup, signOut, currentUser: () => session ? session.user : null };
 })(typeof window !== "undefined" ? window : globalThis);

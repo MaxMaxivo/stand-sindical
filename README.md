@@ -4,6 +4,10 @@ App web móvil base para registrar movimientos de merchandising del stand.
 
 ## Abrir la app
 
+Version publicada: https://maxmaxivo.github.io/stand-sindical/
+
+Para usarla en el celular, abri esa direccion con internet al menos una vez y espera que aparezca `Offline listo`. La venta no requiere contrasena. El acceso de usuario se usa solo en `Resguardo` para enviar una copia privada a Supabase.
+
 La app está en `index.html`. Para probarla en la computadora, abrí:
 
 `outputs/stand-sindical/index.html`
@@ -76,13 +80,15 @@ Para otro proyecto, o para revisar la configuracion:
 
 La venta local funciona sin ingresar a Supabase. Para guardar una copia, usá el email y la contrasena del usuario del stand creado en Authentication, no la contrasena de la base de datos. La sesión de acceso se mantiene en memoria y se vuelve a ingresar al recargar.
 
+Si no tenes esa contrasena, completa solo `Correo` y toca `Enviar enlace de acceso`. Supabase envia un enlace de un solo uso a la cuenta existente. Abrilo en tu correo: vuelve a la app publicada y habilita `Guardar copia en Supabase`. No compartas el enlace ni su direccion. El registro de nuevas cuentas sigue cerrado. La URL de sitio de Authentication debe ser `https://maxmaxivo.github.io/stand-sindical/`. Los envios de correo estan sujetos a los limites y permisos del servicio de correo de Supabase.
+
 Cambiar de `file://` a la vista previa o a una URL publicada abre un almacenamiento diferente. Antes de cambiar la dirección usada en el stand, descargá una copia de los movimientos del navegador original. La importación/restauración de copias todavía no está implementada.
 
 ## GitHub y publicación
 
 La carpeta completa es la raíz del repositorio nuevo `stand-sindical`. Incluye `.github/workflows/pages.yml` para publicar con GitHub Pages. Configurar Pages con fuente `GitHub Actions` en el repositorio. La publicación web se prepara en `dist/` y solo incluye la app y sus recursos. Los movimientos reales se guardan en el navegador y no se agregan al repositorio.
 
-Si el repositorio es privado, la disponibilidad de Pages depende del plan de GitHub. El acceso al proyecto Supabase y al repositorio debe estar conectado antes de crear o publicar esos recursos.
+Repositorio: https://github.com/MaxMaxivo/stand-sindical . Se hizo publico con autorizacion del usuario para utilizar GitHub Pages gratis. La fuente de Pages quedo configurada como `GitHub Actions` y la publicacion inicial fue exitosa. Los datos iniciales del catalogo son publicos; los movimientos nuevos permanecen en cada navegador y las copias de Supabase requieren ingreso.
 
 ## Comprobar
 
@@ -91,4 +97,4 @@ node scripts/check.mjs
 node scripts/build.mjs
 ```
 
-Los controles cubren venta con obsequio, precio pendiente, stock, asignación de show, CSV, undo, archivos offline y la comunicación de resguardo con respuestas simuladas. La prueba real contra Supabase queda pendiente hasta conectar el proyecto.
+Los controles cubren venta con obsequio, precio pendiente, stock, asignación de show, CSV, undo, archivos offline y la comunicación de resguardo con respuestas simuladas. Tambien se comprobo el flujo de venta y deshacer en la URL publicada. Supabase ya esta configurado y rechaza la lectura sin ingreso. El acceso por correo incluye pruebas simuladas de verificacion de identidad, enlaces vencidos y tokens rechazados. La entrega del correo y el envio de una copia real siguen pendientes del ingreso del usuario del stand.
