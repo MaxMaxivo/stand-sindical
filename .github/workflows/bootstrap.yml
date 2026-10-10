@@ -1,0 +1,28 @@
+name: Importar archivos de la app
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - stand-sindical-v2.zip
+      - .github/workflows/bootstrap.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Incorporar archivos del paquete
+        run: |
+          unzip -o stand-sindical-v2.zip -x '.github/*' -d .
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets scripts supabase index.html manifest.webmanifest service-worker.js server.mjs .gitignore README.md FUENTES.md VERIFICACION.md
+          if ! git diff --cached --quiet; then
+            git commit -m 'Importar app Stand Sindical desde el paquete verificado'
+            git push
+          fi
