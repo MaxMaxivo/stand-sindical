@@ -1,0 +1,10 @@
+.env
+.env.*
+!.env.example
+node_modules/
+dist/
+work/
+*.log
+stand-sindical-copia-*.json
+stand-sindical-movimientos-*.csv
+stand-sindical-stock-*.csv

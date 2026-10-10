@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="650" viewBox="0 0 900 650" role="img" aria-labelledby="title desc">
+  <title id="title">Remera unisex</title>
+  <desc id="desc">Imagen placeholder reemplazable para remera unisex.</desc>
+  <rect width="900" height="650" fill="#f1f5f9"/>
+  <rect x="48" y="44" width="804" height="562" rx="34" fill="#ffffff"/>
+  <path d="M310 150l72 54c37 22 99 22 136 0l72-54 132 92-80 130-78-44v196H336V328l-78 44-80-130 132-92z" fill="#111827"/>
+  <path d="M382 204c37 22 99 22 136 0" fill="none" stroke="#d59b2d" stroke-width="18" stroke-linecap="round"/>
+  <rect x="390" y="312" width="120" height="88" rx="12" fill="#b42318"/>
+  <text x="450" y="366" text-anchor="middle" font-family="Arial, sans-serif" font-size="26" font-weight="800" fill="#fff">Z</text>
+  <text x="450" y="112" text-anchor="middle" font-family="Arial, sans-serif" font-size="50" font-weight="800" fill="#111827">REMERA UNISEX</text>
+</svg>

@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#111827" />
+    <title>Stand Sindical</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">Zambayonny</p>
+          <h1>Stand Sindical</h1>
+        </div>
+        <button class="icon-button" id="undoBtn" type="button" aria-label="Deshacer ultima accion" title="Deshacer">
+          <span aria-hidden="true">↶</span>
+        </button>
+      </header>
+
+      <nav class="tabs" aria-label="Secciones">
+        <button class="tab is-active" type="button" data-tab="venta">Venta</button>
+        <button class="tab" type="button" data-tab="historial">Historial</button>
+        <button class="tab" type="button" data-tab="stock">Stock</button>
+        <button class="tab" type="button" data-tab="resguardo">Resguardo</button>
+      </nav>
+
+      <main>
+        <section class="show-bar" aria-label="Show del stand">
+          <label for="showSelect">Show</label>
+          <select id="showSelect"></select>
+          <div class="show-details">
+            <p id="showDetail"></p>
+            <a href="https://zambayonny.com/#shows" target="_blank" rel="noreferrer">Agenda oficial</a>
+          </div>
+        </section>
+        <section class="panel is-active sale-layout" data-panel="venta">
+          <section class="products-area" aria-labelledby="productsTitle">
+            <div class="section-heading">
+              <div>
+                <h2 id="productsTitle">Productos</h2>
+                <p id="dataStatus" class="muted">Datos locales del dispositivo</p>
+              </div>
+              <span class="status-pill" id="offlineStatus">Listo offline</span>
+            </div>
+            <div class="product-grid" id="productGrid"></div>
+          </section>
+
+          <aside class="cart-area" aria-labelledby="cartTitle">
+            <div class="section-heading">
+              <div>
+                <h2 id="cartTitle">Carrito</h2>
+              </div>
+              <button class="text-button" id="clearCartBtn" type="button">Vaciar</button>
+            </div>
+
+            <div class="cart-items" id="cartItems"></div>
+
+            <div class="cart-summary">
+              <div class="total-row">
+                <span>Total</span>
+                <strong id="cartTotal">$0</strong>
+              </div>
+              <p class="cart-warning" id="cartWarning"></p>
+              <button class="primary-action" id="chargeBtn" type="button">Cobrar / confirmar</button>
+            </div>
+          </aside>
+        </section>
+
+        <section class="panel" data-panel="historial">
+          <div class="section-heading">
+            <div>
+              <h2>Historial</h2>
+              <p class="muted">Movimientos guardados en este navegador</p>
+            </div>
+            <button class="secondary-action" id="exportMovementsBtn" type="button">Exportar CSV</button>
+          </div>
+          <div class="movement-list" id="movementList"></div>
+        </section>
+
+        <section class="panel" data-panel="stock">
+          <div class="section-heading">
+            <div>
+              <h2>Stock</h2>
+              <p class="muted">Base declarada + movimientos registrados aca</p>
+            </div>
+            <button class="secondary-action" id="exportStockBtn" type="button">Exportar CSV</button>
+          </div>
+          <div class="stock-list" id="stockList"></div>
+        </section>
+
+        <section class="panel backup-area" data-panel="resguardo">
+          <div class="section-heading">
+            <div><h2>Resguardo</h2><p class="muted" id="cloudStatus">Supabase pendiente de conectar</p></div>
+            <button class="secondary-action" id="downloadBackupBtn" type="button">Descargar copia</button>
+          </div>
+          <form class="backup-login" id="cloudLoginForm">
+            <label>Correo<input id="cloudEmail" type="email" autocomplete="username" required /></label>
+            <label>Contraseña<input id="cloudPassword" type="password" autocomplete="current-password" required /></label>
+            <button class="secondary-action" id="cloudLoginBtn" type="submit">Ingresar</button>
+          </form>
+          <div class="backup-actions">
+            <button class="primary-action" id="cloudBackupBtn" type="button" disabled>Guardar copia en Supabase</button>
+            <button class="text-button" id="cloudLogoutBtn" type="button" hidden>Salir</button>
+          </div>
+          <p class="muted" id="cloudLastBackup">Sin copia enviada desde este navegador</p>
+          <p class="muted">Cada dispositivo conserva sus movimientos por separado.</p>
+          <p class="cart-warning" id="cloudError" role="status"></p>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="sheet" id="productDialog">
+      <form method="dialog" class="sheet-card" id="productForm">
+        <header class="sheet-header">
+          <div>
+            <p class="eyebrow" id="dialogCategory">Producto</p>
+            <h3 id="dialogTitle">Producto</h3>
+          </div>
+          <button class="icon-button" value="cancel" type="button" data-close-dialog aria-label="Cerrar">×</button>
+        </header>
+
+        <div class="product-editor">
+          <img id="dialogImage" class="dialog-image" alt="" />
+          <div>
+            <p class="dialog-price" id="dialogPrice"></p>
+            <p class="dialog-note" id="dialogNote"></p>
+          </div>
+        </div>
+
+        <div class="variant-area" id="variantArea"></div>
+
+        <div class="quantity-row">
+          <span>Cantidad</span>
+          <div class="stepper">
+            <button type="button" id="qtyMinus" aria-label="Restar">−</button>
+            <output id="qtyValue">1</output>
+            <button type="button" id="qtyPlus" aria-label="Sumar">+</button>
+          </div>
+        </div>
+
+        <label class="gift-toggle">
+          <input type="checkbox" id="giftMode" />
+          <span>Obsequio</span>
+        </label>
+
+        <p class="cart-warning" id="productWarning"></p>
+
+        <footer class="sheet-footer">
+          <button class="primary-action" type="button" id="addToCartBtn">Agregar</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog class="sheet" id="paymentDialog">
+      <form method="dialog" class="sheet-card" id="paymentForm">
+        <header class="sheet-header">
+          <div>
+            <p class="eyebrow">Confirmacion</p>
+            <h3 id="paymentTitle">Movimiento</h3>
+          </div>
+          <button class="icon-button" value="cancel" type="button" data-close-payment aria-label="Cerrar">×</button>
+        </header>
+
+        <div class="payment-total">
+          <span>Total a rendir</span>
+          <strong id="paymentTotal">$0</strong>
+        </div>
+        <p class="muted" id="paymentShow"></p>
+
+        <div class="payment-options" id="paymentOptions">
+          <button type="button" class="payment-option is-active" data-payment="Efectivo">Efectivo</button>
+          <button type="button" class="payment-option" data-payment="Transferencia">Transferencia</button>
+          <button type="button" class="payment-option" data-payment="Otro">Otro</button>
+        </div>
+
+        <label class="note-field">
+          <span>Nota</span>
+          <textarea id="saleNote" rows="3" placeholder="Opcional"></textarea>
+        </label>
+
+        <footer class="sheet-footer">
+          <button class="primary-action" type="button" id="confirmSaleBtn">Confirmar movimiento</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="assets/data/images.js"></script>
+    <script src="assets/data/products.js"></script>
+    <script src="assets/data/shows.js"></script>
+    <script src="assets/data/config.js"></script>
+    <script src="assets/js/domain.js"></script>
+    <script src="assets/js/storage.js"></script>
+    <script src="assets/js/cloud.js"></script>
+    <script src="assets/js/app.js"></script>
+  </body>
+</html>

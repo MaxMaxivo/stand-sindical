@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="650" viewBox="0 0 900 650" role="img" aria-labelledby="title desc">
+  <title id="title">Producto a conciliar</title>
+  <desc id="desc">Imagen placeholder para productos pendientes de conciliación.</desc>
+  <rect width="900" height="650" fill="#f8fafc"/>
+  <rect x="54" y="54" width="792" height="542" rx="34" fill="#fff" stroke="#d8dee7" stroke-width="8"/>
+  <path d="M286 262h328v212H286z" fill="#eef2f7" stroke="#111827" stroke-width="16"/>
+  <path d="M334 262c18-64 57-96 116-96s98 32 116 96" fill="none" stroke="#b42318" stroke-width="18" stroke-linecap="round"/>
+  <path d="M384 352h132M384 410h84" stroke="#111827" stroke-width="18" stroke-linecap="round"/>
+  <text x="450" y="126" text-anchor="middle" font-family="Arial, sans-serif" font-size="45" font-weight="800" fill="#111827">A CONCILIAR</text>
+</svg>
